@@ -226,6 +226,13 @@ extern const unsigned int spe2_num_opcodes;
 /* Opcode is supported by EFS2.  */
 #define PPC_OPCODE_EFS2	    0x200000000000ull
 
+/* Opcode is supported by the Xbox 360 "Xenon" VMX128 vector extension.  */
+#define PPC_OPCODE_VMX_128  0x400000000000ull
+
+/* Selected by -mvmx128.  When set in the "deprecated" field of an entry,
+   the entry is not implemented by Xenon and is rejected.  */
+#define PPC_OPCODE_XENON    0x800000000000ull
+
 /* A macro to extract the major opcode from an instruction.  */
 #define PPC_OP(i) (((i) >> 26) & 0x3f)
 

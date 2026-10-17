@@ -239,6 +239,9 @@ struct ppc_mopt ppc_opts[] = {
   { "titan",   (PPC_OPCODE_PPC | PPC_OPCODE_BOOKE | PPC_OPCODE_PMR
 		| PPC_OPCODE_RFMCI | PPC_OPCODE_TITAN),
     0 },
+  { "vmx128",  (PPC_OPCODE_PPC | PPC_OPCODE_64 | PPC_OPCODE_POWER4
+		| PPC_OPCODE_CELL | PPC_OPCODE_ALTIVEC),
+    PPC_OPCODE_VMX_128 | PPC_OPCODE_XENON },
   { "vle",     (PPC_OPCODE_PPC | PPC_OPCODE_BOOKE| PPC_OPCODE_SPE
 		| PPC_OPCODE_ISEL | PPC_OPCODE_EFS | PPC_OPCODE_BRLOCK
 		| PPC_OPCODE_PMR | PPC_OPCODE_CACHELCK | PPC_OPCODE_RFMCI
@@ -348,7 +351,8 @@ powerpc_init_dialect (struct disassemble_info *info)
       break;
     default:
       if (info->arch == bfd_arch_powerpc)
-	dialect = ppc_parse_cpu (dialect, &sticky, "power9") | PPC_OPCODE_ANY;
+	dialect = (ppc_parse_cpu (dialect, &sticky, "power9")
+		   | PPC_OPCODE_ANY | PPC_OPCODE_VMX_128);
       else
 	dialect = ppc_parse_cpu (dialect, &sticky, "pwr");
       break;
