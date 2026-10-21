@@ -2763,7 +2763,13 @@ rather than @code{li}.  All of the @option{-m} arguments for
 @option{ppcps}, @option{pwr}, @option{pwr2}, @option{pwr4}, @option{pwr5},
 @option{pwr5x}, @option{pwr6}, @option{pwr7}, @option{pwr8}, @option{pwr9},
 @option{pwr10}, @option{pwr11}, @option{pwrx}, @option{titan}, @option{vle},
-and @option{future}.
+@option{vmx128}, @option{xenon} and @option{future}.
+@option{xenon} (and its alias @option{vmx128}) decodes VMX128 and only
+the instructions in the Xenon allow-list, and only in their canonical
+encoding (the printed text reassembles to the same word); other words
+print as @code{.long}.  Combined with @option{xenon}, @option{any} and
+the other extension options (@option{altivec}, @option{vsx}, @option{spe},
+@option{spe2}, @option{lsp}, @option{vle}) add nothing.
 @option{32} and @option{64} modify the default or a prior CPU
 selection, disabling and enabling 64-bit insns respectively.  In
 addition, @option{altivec}, @option{any}, @option{lsp}, @option{htm},

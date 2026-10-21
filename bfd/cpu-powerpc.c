@@ -154,5 +154,6 @@ const bfd_arch_info_type bfd_powerpc_archs[] =
   },
 
   N (64, bfd_mach_ppc_e5500, "powerpc:e5500", false, bfd_powerpc_archs + 21),
-  N (64, bfd_mach_ppc_e6500, "powerpc:e6500", false, NULL)
+  N (64, bfd_mach_ppc_e6500, "powerpc:e6500", false, bfd_powerpc_archs + 22),
+  N (64, bfd_mach_ppc_xenon, "powerpc:xenon", false, NULL)
 };

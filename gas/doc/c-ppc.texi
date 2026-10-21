@@ -166,6 +166,21 @@ Generate code for 'future' architecture.
 @item -mcell
 Generate code for Cell Broadband Engine architecture.
 
+@item -mxenon
+@itemx -mvmx128
+Generate code for the Xenon (Xbox 360) CPU.  This is the Cell selection
+plus the VMX128 instructions (128 vector registers, @code{v0} to
+@code{v127}), @code{dcbz128} and @code{xdcbt}, restricted to the
+instructions the console implements: an instruction is accepted only if
+its encoding is in the Xenon allow-list, and the hardware-illegal ones
+(for example @code{vmuleub}, @code{popcntb}, @code{lvsl128}) are reported
+as not implemented on Xenon.  @option{-many}, @option{-maltivec} and
+@option{-mvsx} do not widen this set, and @option{-mspe}, @option{-mspe2},
+@option{-mlsp} and @option{-mvle} (or the same @code{.machine} names)
+are errors together with it.  Operands that are only known later
+(forward-referenced symbols) get the same checks.
+@option{-mvmx128} is an alias.
+
 @item -mcom
 Generate code Power/PowerPC common instructions.
 

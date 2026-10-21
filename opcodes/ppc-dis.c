@@ -293,8 +293,14 @@ static const struct ppc_mopt ppc_opts[] = {
 		| PPC_OPCODE_PMR | PPC_OPCODE_CACHELCK | PPC_OPCODE_RFMCI
 		| PPC_OPCODE_EFS2 | PPC_OPCODE_SPE2),
     PPC_OPCODE_VLE },
+  { "vmx128",  PPC_XENON_CPU,
+    0 },
   { "vsx",     PPC_OPCODE_PPC,
     PPC_OPCODE_VSX },
+  /* Xenon (Xbox 360): the cell row plus the Xenon allow-list and VMX128.
+     "vmx128" above is an alias kept for existing makefiles.  */
+  { "xenon",   PPC_XENON_CPU,
+    0 },
 };
 
 /* Switch between Booke and VLE dialects for interlinked dumps.  */
@@ -428,6 +434,9 @@ powerpc_init_dialect (struct disassemble_info *info)
     case bfd_mach_ppc_vle:
       out.dialect = ppc_parse_cpu (out.dialect, &out.sticky, "vle");
       break;
+    case bfd_mach_ppc_xenon:
+      out.dialect = ppc_parse_cpu (out.dialect, &out.sticky, "xenon");
+      break;
     default:
       if (info->arch == bfd_arch_powerpc)
 	out.dialect = (ppc_parse_cpu (out.dialect, &out.sticky, "power11")
@@ -438,6 +447,14 @@ powerpc_init_dialect (struct disassemble_info *info)
     }
 
   for_each_disassembler_option (info, ppc_parse_option, &out);
+
+  /* Xenon: sticky extension options add nothing to the Xenon dialect
+     (plan D6).  In particular -Mspe, -Mspe2, -Mlsp and -Mvle are dropped:
+     SPE rows share major opcode 4 with AltiVec, and would otherwise print
+     allowed AltiVec words under SPE names.  "any" and "raw" stay, as
+     display options.  */
+  if ((out.dialect & PPC_OPCODE_XENON) != 0)
+    out.dialect &= PPC_XENON_CPU | PPC_OPCODE_ANY | PPC_OPCODE_RAW;
 
   info->private_data = priv;
   private_data (info)->dialect = out.dialect;
@@ -642,6 +659,81 @@ skip_optional_operands (const ppc_opindex_t *opindex,
   return true;
 }
 
+/* Xenon dialect: true if re-encoding the operand values that OPCODE
+   decodes from INSN reproduces INSN, the way gas would assemble them
+   (operand order, insert functions and their diagnostics).  Words that
+   fail print as .long, so that every printed instruction reassembles to
+   the same word: allowed words with reserved bits set that no operand
+   covers (bit 22 of cmpi, the L and W bits of mtfsf on POWER4, the
+   reserved fields of dss/dst) and operand combinations gas rejects (lswi
+   with RA in the loaded range).  Only the bits outside the row's mask are
+   compared: those inside already match the row, and an insert function
+   may deliberately pick another encoding there (insert_fxm turns a
+   one-field mtcrf into mtocrf).  */
+
+static bool
+xenon_canonical_p (const struct powerpc_opcode *opcode, uint64_t insn,
+		   ppc_cpu_t dialect)
+{
+  const ppc_opindex_t *opindex;
+  uint64_t word = opcode->opcode;
+
+  for (opindex = opcode->operands; *opindex != 0; opindex++)
+    {
+      const struct powerpc_operand *operand = powerpc_operands + *opindex;
+      int64_t value = operand_value_powerpc (operand, insn, dialect);
+
+      if (operand->insert != NULL)
+	{
+	  const char *errmsg = NULL;
+
+	  word = (*operand->insert) (word, value, dialect, &errmsg);
+	  if (errmsg != NULL)
+	    return false;
+	}
+      else
+	{
+	  if ((operand->flags & PPC_OPERAND_NONZERO) != 0)
+	    --value;
+	  if (operand->shift >= 0)
+	    word |= ((uint64_t) value & operand->bitm) << operand->shift;
+	  else
+	    word |= ((uint64_t) value & operand->bitm) >> -operand->shift;
+	}
+    }
+  return ((word ^ insn) & ~opcode->mask) == 0;
+}
+
+/* Return true if OPCODE must not be used to decode INSN under DIALECT,
+   for the Xenon rules.  Called from every lookup_* function next to the
+   existing deprecated test.
+   - Rows flagged PPC_OPCODE_XENON or PPC_OPCODE_VMX_128 (the VMX128 rows,
+     dcbz128, xdcbt and the decode-only mftb rows) only ever match under a
+     dialect with those bits, even with -Many, so other dialects decode
+     exactly as before.
+   - Under PPC_OPCODE_XENON (plan D6) the row must belong to the Xenon
+     dialect proper (PPC_XENON_CPU: PPC_OPCODE_ANY and sticky extensions do
+     not widen it, and only powerpc_opcodes rows qualify), the word itself
+     must be in the Xenon allow-list, and it must be the canonical encoding
+     of what is printed (xenon_canonical_p); anything else prints as
+     .long.  */
+
+static inline bool
+xenon_reject_p (const struct powerpc_opcode *opcode, uint64_t insn,
+		ppc_cpu_t dialect)
+{
+  if ((opcode->flags & (PPC_OPCODE_XENON | PPC_OPCODE_VMX_128)
+       & ~dialect) != 0)
+    return true;
+  if ((dialect & PPC_OPCODE_XENON) == 0)
+    return false;
+  return ((opcode->flags & dialect & PPC_XENON_CPU) == 0
+	  || (opcode->deprecated & dialect) != 0
+	  || !ppc_xenon_opcode_ok (opcode)
+	  || !ppc_xenon_insn_ok (insn)
+	  || !xenon_canonical_p (opcode, insn, dialect));
+}
+
 /* Find a match for INSN in the opcode table, given machine DIALECT.  */
 
 static const struct powerpc_opcode *
@@ -667,7 +759,8 @@ lookup_powerpc (uint64_t insn, ppc_cpu_t dialect)
 	  || ((dialect & PPC_OPCODE_ANY) == 0
 	      && ((opcode->flags & dialect) == 0
 		  || (opcode->deprecated & dialect) != 0))
-	  || (opcode->deprecated & dialect & PPC_OPCODE_RAW) != 0)
+	  || (opcode->deprecated & dialect & PPC_OPCODE_RAW) != 0
+	  || xenon_reject_p (opcode, insn, dialect))
 	continue;
 
       /* Check validity of operands.  */
@@ -711,7 +804,8 @@ lookup_prefix (uint64_t insn, ppc_cpu_t dialect)
       if ((insn & opcode->mask) != opcode->opcode
 	  || ((dialect & PPC_OPCODE_ANY) == 0
 	      && (opcode->flags & dialect) == 0)
-	  || (opcode->deprecated & dialect) != 0)
+	  || (opcode->deprecated & dialect) != 0
+	  || xenon_reject_p (opcode, insn, dialect))
 	continue;
 
       /* Check validity of operands.  */
@@ -766,7 +860,8 @@ lookup_vle (uint64_t insn, ppc_cpu_t dialect)
       if (table_op_is_short)
 	insn2 >>= 16;
       if ((insn2 & table_mask) != table_opcd
-	  || (opcode->deprecated & dialect) != 0)
+	  || (opcode->deprecated & dialect) != 0
+	  || xenon_reject_p (opcode, insn, dialect))
 	continue;
 
       /* Check validity of operands.  */
@@ -811,7 +906,8 @@ lookup_lsp (uint64_t insn, ppc_cpu_t dialect)
       int invalid;
 
       if ((insn & opcode->mask) != opcode->opcode
-	  || (opcode->deprecated & dialect) != 0)
+	  || (opcode->deprecated & dialect) != 0
+	  || xenon_reject_p (opcode, insn, dialect))
 	continue;
 
       /* Check validity of operands.  */
@@ -864,7 +960,8 @@ lookup_spe2 (uint64_t insn, ppc_cpu_t dialect)
 
       insn2 = insn;
       if ((insn2 & table_mask) != table_opcd
-	  || (opcode->deprecated & dialect) != 0)
+	  || (opcode->deprecated & dialect) != 0
+	  || xenon_reject_p (opcode, insn, dialect))
 	continue;
 
       /* Check validity of operands.  */

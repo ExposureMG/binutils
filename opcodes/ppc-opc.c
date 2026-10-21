@@ -2931,6 +2931,9 @@ extract_thds (uint64_t insn,
   return value;
 }
 
+/* Xenon VMX128 operand functions (generated).  */
+#include "ppc-xenon-insert.inc"
+
 /* The operands table.
 
    The fields are bitm, shift, insert, extract, flags.
@@ -4167,6 +4170,9 @@ const struct powerpc_operand powerpc_operands[] =
 
 #define mi2 mi1 + 1
   { 0x3, 15, NULL, NULL, 0 },
+
+  /* Xenon VMX128 operands (generated).  */
+#include "ppc-xenon-operands.inc"
 };
 
 const unsigned int num_powerpc_operands = ARRAY_SIZE (powerpc_operands);
@@ -5301,6 +5307,8 @@ const unsigned int num_powerpc_operands = ARRAY_SIZE (powerpc_operands);
 #define E200Z4	PPC_OPCODE_E200Z4
 #define PPCLSP	PPC_OPCODE_LSP
 #define SVP64	PPC_OPCODE_SVP64
+#define PPCXENON PPC_OPCODE_XENON
+#define PPCVMX128 PPC_OPCODE_VMX_128
 /* Used to mark extended mnemonic in deprecated field so that -Mraw
    won't use this variant in disassembly.  */
 #define EXT	PPC_OPCODE_RAW
@@ -6330,8 +6338,17 @@ const struct powerpc_opcode powerpc_opcodes[] = {
 {"nmaclhwso.",	XO (4, 494,1,1), XO_MASK,    MULHW,	0,		{RT, RA, RB}},
 {"dcbz_l",	X  (4,1014),	XRT_MASK,    PPCPS,	0,		{RA, RB}},
 
+/* Xenon VMX128, major opcode 4 (generated).  */
+#include "ppc-xenon-op4.inc"
+
+/* Xenon VMX128, major opcode 5 (generated).  */
+#include "ppc-xenon-op5.inc"
+
 {"lxvp",	DQXP(6,0),	DQXP_MASK,   POWER10,	PPCVLE,		{XTP, DQ, RA0}},
 {"stxvp",	DQXP(6,1),	DQXP_MASK,   POWER10,	PPCVLE,		{XSP, DQ, RA0}},
+
+/* Xenon VMX128, major opcode 6 (generated).  */
+#include "ppc-xenon-op6.inc"
 
 {"mulli",	OP(7),		OP_MASK,     PPCCOM,	PPCVLE,		{RT, RA, SI}},
 {"muli",	OP(7),		OP_MASK,     PWRCOM,	PPCVLE,		{RT, RA, SI}},
@@ -7782,9 +7799,13 @@ const struct powerpc_opcode powerpc_opcodes[] = {
 {"mtvrwz",	X(31,243)|1,	XX1RB_MASK|1, PPCVSX2,	EXT,		{VD, RA}},
 {"mtvsrwz",	X(31,243),	XX1RB_MASK,   PPCVSX2,	0,		{XT6, RA}},
 
+/* The Xenon dialect does not take the ISA 2.05 dcbt/dcbtst TH-hint names
+   (dcbtct, dcbtds, dcbtstct, dcbtstds): they are not Xenon names, and they
+   would make a plain dcbt/dcbtst disassemble as dcbtct/dcbtstct.  The words
+   stay accepted as dcbt/dcbtst RA,RB,TH (TH=16 is xdcbt).  */
 {"dcbtstt",	XRT(31,246,0x10), XRT_MASK,  POWER7,	EXT,		{RA0, RB}},
-{"dcbtstct",	X(31,246),	X_MASK,	     POWER4,	EXT,		{RA0, RB, THCT}},
-{"dcbtstds",	X(31,246),	X_MASK,	     POWER4,	EXT,		{RA0, RB, THDS}},
+{"dcbtstct",	X(31,246),	X_MASK,	     POWER4,	EXT|PPCXENON,	{RA0, RB, THCT}},
+{"dcbtstds",	X(31,246),	X_MASK,	     POWER4,	EXT|PPCXENON,	{RA0, RB, THDS}},
 {"dcbtst",	X(31,246),	X_MASK,	     POWER4,	DCBT_EO,	{RA0, RB, CT}},
 {"dcbtst",	X(31,246),	X_MASK,	     DCBT_EO,	0,		{CT, RA0, RB}},
 {"dcbtst",	X(31,246),	X_MASK,	     PPC,	POWER4|DCBT_EO,	{RA0, RB}},
@@ -7836,10 +7857,13 @@ const struct powerpc_opcode powerpc_opcodes[] = {
 {"lscbx",	XRC(31,277,0),	X_MASK,	     M601,	0,		{RT, RA, RB}},
 {"lscbx.",	XRC(31,277,1),	X_MASK,	     M601,	0,		{RT, RA, RB}},
 
+/* Xenon: dcbt with TH=16 (generated row, before dcbtt/dcbt).  See the
+   comment before dcbtstt for dcbtct/dcbtds.  */
+XENON_OPCODE_XDCBT,
 {"dcbtt",	XRT(31,278,0x10), XRT_MASK,  POWER7,	EXT,		{RA0, RB}},
 {"dcbna",	XRT(31,278,0x11), XRT_MASK,  POWER10,	EXT,		{RA0, RB}},
-{"dcbtct",	X(31,278),	X_MASK,      POWER4,	EXT,		{RA0, RB, THCT}},
-{"dcbtds",	X(31,278),	X_MASK,      POWER4,	EXT,		{RA0, RB, THDS}},
+{"dcbtct",	X(31,278),	X_MASK,      POWER4,	EXT|PPCXENON,	{RA0, RB, THCT}},
+{"dcbtds",	X(31,278),	X_MASK,      POWER4,	EXT|PPCXENON,	{RA0, RB, THDS}},
 {"dcbt",	X(31,278),	X_MASK,	     POWER4,	DCBT_EO,	{RA0, RB, CT}},
 {"dcbt",	X(31,278),	X_MASK,	     DCBT_EO,	0,		{CT, RA0, RB}},
 {"dcbt",	X(31,278),	X_MASK,	     PPC,	POWER4|DCBT_EO,	{RA0, RB}},
@@ -8264,6 +8288,11 @@ const struct powerpc_opcode powerpc_opcodes[] = {
 
 {"tlbia",	X(31,370),	0xffffffff,  PPC,	E500|TITAN,	{0}},
 
+/* Xenon: decode-only rows for the mftb form that Xbox 360 code uses (the
+   POWER4 rows above, which gas uses, deprecate it).  gas keeps the first
+   row of each name, see ppc_setup_opcodes.  */
+{"mftbu",	XSPR(31,371,269), XSPR_MASK, PPCXENON,	EXT,		{RT}},
+{"mftb",	X(31,371),	X_MASK,	     PPCXENON,	0,		{RT, TBR}},
 {"mftbu",	XSPR(31,371,269), XSPR_MASK, PPC,	NO371|POWER4|EXT,	{RT}},
 {"mftb",	X(31,371),	X_MASK,	     PPC,	NO371|POWER4,		{RT, TBR}},
 {"mftbl",	XSPR(31,371,268), XSPR_MASK, PPC,	NO371|POWER4|EXT,	{RT}},
@@ -8338,27 +8367,29 @@ const struct powerpc_opcode powerpc_opcodes[] = {
 
 {"sthux",	X(31,439),	X_MASK,	     COM,	0,		{RS, RAS, RB}},
 
-/* or 1,1,1 */
-{"cctpl",	0x7c210b78,	0xffffffff,  CELL,	EXT,		{0}},
+/* or 1,1,1.  The Xenon dialect does not take the Cell cctp* and db*cyc
+   names (the Xenon ISA data marks cctp* unsourced and does not list db*cyc,
+   which are Cell BE delay hints); the words stay accepted as "or" / "mr".  */
+{"cctpl",	0x7c210b78,	0xffffffff,  CELL,	EXT|PPCXENON,	{0}},
 /* or 2,2,2 */
-{"cctpm",	0x7c421378,	0xffffffff,  CELL,	EXT,		{0}},
+{"cctpm",	0x7c421378,	0xffffffff,  CELL,	EXT|PPCXENON,	{0}},
 /* or 3,3,3 */
-{"cctph",	0x7c631b78,	0xffffffff,  CELL,	EXT,		{0}},
+{"cctph",	0x7c631b78,	0xffffffff,  CELL,	EXT|PPCXENON,	{0}},
 /* or 26,26,26 */
 {"miso",	0x7f5ad378,   0xffffffff, POWER8|E6500,	EXT,		{0}},
 /* or 27,27,27 */
 {"yield",	0x7f7bdb78,	0xffffffff,  POWER7,	EXT,		{0}},
 /* or 28,28,28 */
 {"mdors",	0x7f9ce378,	0xffffffff,  E500MC,	EXT,		{0}},
-{"db8cyc",	0x7f9ce378,	0xffffffff,  CELL,	EXT,		{0}},
+{"db8cyc",	0x7f9ce378,	0xffffffff,  CELL,	EXT|PPCXENON,	{0}},
 /* or 29,29,29 */
 {"mdoio",	0x7fbdeb78,	0xffffffff,  POWER7,	EXT,		{0}},
-{"db10cyc",	0x7fbdeb78,	0xffffffff,  CELL,	EXT,		{0}},
+{"db10cyc",	0x7fbdeb78,	0xffffffff,  CELL,	EXT|PPCXENON,	{0}},
 /* or 30,30,30 */
 {"mdoom",	0x7fdef378,	0xffffffff,  POWER7,	EXT,		{0}},
-{"db12cyc",	0x7fdef378,	0xffffffff,  CELL,	EXT,		{0}},
+{"db12cyc",	0x7fdef378,	0xffffffff,  CELL,	EXT|PPCXENON,	{0}},
 /* or 31,31,31 */
-{"db16cyc",	0x7ffffb78,	0xffffffff,  CELL,	EXT,		{0}},
+{"db16cyc",	0x7ffffb78,	0xffffffff,  CELL,	EXT|PPCXENON,	{0}},
 
 {"mr",		XRC(31,444,0),	X_MASK,	     COM,	EXT,		{RA, RSB}},
 {"or",		XRC(31,444,0),	X_MASK,	     COM,	0,		{RA, RS, RB}},
@@ -9285,6 +9316,8 @@ const struct powerpc_opcode powerpc_opcodes[] = {
 
 {"dcbz",	X(31,1014),	XRT_MASK,    PPC,	0,		{RA0, RB}},
 {"dclz",	X(31,1014),	XRT_MASK,    PPC,	0,		{RA0, RB}},
+/* Xenon: dcbz with L=1 (generated row, before dcbzl).  */
+XENON_OPCODE_DCBZ128,
 {"dcbzl",	XOPL(31,1014,1), XRT_MASK,   POWER4|E500MC, PPC476,	{RA0, RB}},
 
 {"dcbzep",	XRT(31,1023,0),	XRT_MASK,    E500MC|PPCA2, 0,		{RA0, RB}},
@@ -12029,3 +12062,109 @@ const struct powerpc_opcode spe2_opcodes[] = {
 };
 
 const unsigned int spe2_num_opcodes = ARRAY_SIZE (spe2_opcodes);
+
+/* Xenon allow-list (plan D6).  The tables are generated by
+   tools/gen_xenon_opc.py from isa/findings_instructions.csv and
+   isa/xenon_isa.json.  */
+
+#include "ppc-xenon-allow.inc"
+
+/* Return the allow-list entry that accepts instruction word INSN, or NULL.  */
+
+const struct ppc_xenon_insn *
+ppc_xenon_lookup (uint64_t insn)
+{
+  unsigned int i, op;
+
+  /* Xenon has no prefixed (8-byte) instructions.  */
+  if (insn > 0xffffffff)
+    return NULL;
+
+  op = PPC_OP (insn);
+  for (i = ppc_xenon_allow_index[op]; i < ppc_xenon_allow_index[op + 1]; i++)
+    if ((insn & ppc_xenon_allow[i].mask) == ppc_xenon_allow[i].match)
+      return &ppc_xenon_allow[i];
+  return NULL;
+}
+
+/* Nonzero if instruction word INSN is accepted on Xenon.  This is the
+   exact check: gas applies it to every assembled word and the disassembler
+   to every word it decodes.  */
+
+int
+ppc_xenon_insn_ok (uint64_t insn)
+{
+  return ppc_xenon_lookup (insn) != NULL;
+}
+
+/* Nonzero if powerpc_opcodes row OPCODE can encode at least one accepted
+   word: some allow-list entry agrees with the row on every bit that both
+   fix.  gas uses this to decide which rows enter its mnemonic hash under
+   the Xenon dialect; the exact word check (ppc_xenon_insn_ok) still runs on
+   the assembled instruction.  */
+
+int
+ppc_xenon_opcode_ok (const struct powerpc_opcode *opcode)
+{
+  unsigned int i, op;
+  uintptr_t p = (uintptr_t) opcode;
+
+  if (p < (uintptr_t) powerpc_opcodes
+      || p >= (uintptr_t) (powerpc_opcodes + powerpc_num_opcodes))
+    return 0;
+  if (opcode->opcode > 0xffffffff)
+    return 0;
+
+  op = PPC_OP (opcode->opcode);
+  for (i = ppc_xenon_allow_index[op]; i < ppc_xenon_allow_index[op + 1]; i++)
+    if (((opcode->opcode ^ ppc_xenon_allow[i].match)
+	 & opcode->mask & ppc_xenon_allow[i].mask) == 0)
+      return 1;
+  return 0;
+}
+
+/* Nonzero if OPERAND is the tied vS operand (VS128T): the operand with
+   no field of its own whose insert function compares it with vD.  */
+
+int
+ppc_xenon_tied_operand_p (const struct powerpc_operand *operand)
+{
+  return operand->insert == insert_vs128t;
+}
+
+/* Return the hardware-illegal entry for mnemonic NAME, or when NAME is
+   NULL, the one whose encoding matches INSN.  */
+
+const struct ppc_xenon_insn *
+ppc_xenon_find_illegal (const char *name, uint64_t insn)
+{
+  unsigned int i;
+
+  if (name != NULL)
+    {
+      size_t len;
+
+      for (i = 0; i < ARRAY_SIZE (ppc_xenon_illegal_names); i++)
+	if (strcmp (name, ppc_xenon_illegal_names[i]) == 0)
+	  break;
+      if (i == ARRAY_SIZE (ppc_xenon_illegal_names))
+	return NULL;
+
+      /* "fre." belongs to the "fre" entry.  */
+      len = strlen (name);
+      if (len > 1 && name[len - 1] == '.')
+	len--;
+      for (i = 0; i < ppc_xenon_num_illegal; i++)
+	if (strlen (ppc_xenon_illegal[i].name) == len
+	    && strncmp (ppc_xenon_illegal[i].name, name, len) == 0)
+	  return &ppc_xenon_illegal[i];
+      return NULL;
+    }
+
+  if (insn > 0xffffffff)
+    return NULL;
+  for (i = 0; i < ppc_xenon_num_illegal; i++)
+    if ((insn & ppc_xenon_illegal[i].mask) == ppc_xenon_illegal[i].match)
+      return &ppc_xenon_illegal[i];
+  return NULL;
+}

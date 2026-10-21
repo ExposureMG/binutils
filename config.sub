@@ -257,7 +257,8 @@ case $1 in
 					| unicom* \
 					| wec \
 					| winbond \
-					| wrs)
+					| wrs \
+					| xenon)
 						basic_machine=$field1-$field2
 						basic_os=
 						;;
@@ -951,6 +952,13 @@ case $basic_machine in
 	sde)
 		cpu=mipsisa32
 		vendor=sde
+		basic_os=${basic_os:-elf}
+		;;
+	# Microsoft Xbox 360 (Xenon) PPE, bare metal.  "xenon" and "xenon-*"
+	# are shorthands for powerpc64-xenon-elf.
+	xenon | xenon-*)
+		cpu=powerpc64
+		vendor=xenon
 		basic_os=${basic_os:-elf}
 		;;
 	simso-wrs)
@@ -1757,6 +1765,10 @@ case $cpu-$vendor in
 		obj=elf
 		;;
 	spu-*)
+		os=
+		obj=elf
+		;;
+	*-xenon)
 		os=
 		obj=elf
 		;;

@@ -95,13 +95,21 @@ extern void ppc_frag_check (struct frag *);
 struct _ppc_fix_extra
 {
   ppc_cpu_t ppc_cpu;
+  /* Mnemonic of the instruction an operand fixup belongs to (NULL for
+     data fixups), for the Xenon diagnostics given in md_apply_fix.  */
+  const char *insn_name;
 };
 
 extern ppc_cpu_t ppc_cpu;
 
 #define TC_FIX_TYPE struct _ppc_fix_extra
-#define TC_INIT_FIX_DATA(FIXP) \
-  do { (FIXP)->tc_fix_data.ppc_cpu = ppc_cpu; } while (0)
+#define TC_INIT_FIX_DATA(FIXP)				\
+  do							\
+    {							\
+      (FIXP)->tc_fix_data.ppc_cpu = ppc_cpu;		\
+      (FIXP)->tc_fix_data.insn_name = NULL;		\
+    }							\
+  while (0)
 
 #ifdef OBJ_XCOFF
 

@@ -284,6 +284,9 @@ struct pd_reg
    Each vector unit register has predefined names of the form:
    1. v<reg_num> which has the value <reg_num>.
    2. v.<reg_num> which has the value <reg_num>.
+   v32-v127 (and v.32-v.127) are the Xenon VMX128 registers; they are only
+   recognised when the dialect has PPC_OPCODE_VMX_128 (-mxenon, -mvmx128),
+   see ppc_reg_visible.
 
    Each condition register has predefined names of the form:
    1. cr<reg_num> which has the value <reg_num>.
@@ -586,8 +589,36 @@ static const struct pd_reg pre_defined_registers[] =
   { "v.0", 0, PPC_OPERAND_VR },
   { "v.1", 1, PPC_OPERAND_VR },
   { "v.10", 10, PPC_OPERAND_VR },
+  { "v.100", 100, PPC_OPERAND_VR },
+  { "v.101", 101, PPC_OPERAND_VR },
+  { "v.102", 102, PPC_OPERAND_VR },
+  { "v.103", 103, PPC_OPERAND_VR },
+  { "v.104", 104, PPC_OPERAND_VR },
+  { "v.105", 105, PPC_OPERAND_VR },
+  { "v.106", 106, PPC_OPERAND_VR },
+  { "v.107", 107, PPC_OPERAND_VR },
+  { "v.108", 108, PPC_OPERAND_VR },
+  { "v.109", 109, PPC_OPERAND_VR },
   { "v.11", 11, PPC_OPERAND_VR },
+  { "v.110", 110, PPC_OPERAND_VR },
+  { "v.111", 111, PPC_OPERAND_VR },
+  { "v.112", 112, PPC_OPERAND_VR },
+  { "v.113", 113, PPC_OPERAND_VR },
+  { "v.114", 114, PPC_OPERAND_VR },
+  { "v.115", 115, PPC_OPERAND_VR },
+  { "v.116", 116, PPC_OPERAND_VR },
+  { "v.117", 117, PPC_OPERAND_VR },
+  { "v.118", 118, PPC_OPERAND_VR },
+  { "v.119", 119, PPC_OPERAND_VR },
   { "v.12", 12, PPC_OPERAND_VR },
+  { "v.120", 120, PPC_OPERAND_VR },
+  { "v.121", 121, PPC_OPERAND_VR },
+  { "v.122", 122, PPC_OPERAND_VR },
+  { "v.123", 123, PPC_OPERAND_VR },
+  { "v.124", 124, PPC_OPERAND_VR },
+  { "v.125", 125, PPC_OPERAND_VR },
+  { "v.126", 126, PPC_OPERAND_VR },
+  { "v.127", 127, PPC_OPERAND_VR },
   { "v.13", 13, PPC_OPERAND_VR },
   { "v.14", 14, PPC_OPERAND_VR },
   { "v.15", 15, PPC_OPERAND_VR },
@@ -609,18 +640,114 @@ static const struct pd_reg pre_defined_registers[] =
   { "v.3", 3, PPC_OPERAND_VR },
   { "v.30", 30, PPC_OPERAND_VR },
   { "v.31", 31, PPC_OPERAND_VR },
+  { "v.32", 32, PPC_OPERAND_VR },
+  { "v.33", 33, PPC_OPERAND_VR },
+  { "v.34", 34, PPC_OPERAND_VR },
+  { "v.35", 35, PPC_OPERAND_VR },
+  { "v.36", 36, PPC_OPERAND_VR },
+  { "v.37", 37, PPC_OPERAND_VR },
+  { "v.38", 38, PPC_OPERAND_VR },
+  { "v.39", 39, PPC_OPERAND_VR },
   { "v.4", 4, PPC_OPERAND_VR },
+  { "v.40", 40, PPC_OPERAND_VR },
+  { "v.41", 41, PPC_OPERAND_VR },
+  { "v.42", 42, PPC_OPERAND_VR },
+  { "v.43", 43, PPC_OPERAND_VR },
+  { "v.44", 44, PPC_OPERAND_VR },
+  { "v.45", 45, PPC_OPERAND_VR },
+  { "v.46", 46, PPC_OPERAND_VR },
+  { "v.47", 47, PPC_OPERAND_VR },
+  { "v.48", 48, PPC_OPERAND_VR },
+  { "v.49", 49, PPC_OPERAND_VR },
   { "v.5", 5, PPC_OPERAND_VR },
+  { "v.50", 50, PPC_OPERAND_VR },
+  { "v.51", 51, PPC_OPERAND_VR },
+  { "v.52", 52, PPC_OPERAND_VR },
+  { "v.53", 53, PPC_OPERAND_VR },
+  { "v.54", 54, PPC_OPERAND_VR },
+  { "v.55", 55, PPC_OPERAND_VR },
+  { "v.56", 56, PPC_OPERAND_VR },
+  { "v.57", 57, PPC_OPERAND_VR },
+  { "v.58", 58, PPC_OPERAND_VR },
+  { "v.59", 59, PPC_OPERAND_VR },
   { "v.6", 6, PPC_OPERAND_VR },
+  { "v.60", 60, PPC_OPERAND_VR },
+  { "v.61", 61, PPC_OPERAND_VR },
+  { "v.62", 62, PPC_OPERAND_VR },
+  { "v.63", 63, PPC_OPERAND_VR },
+  { "v.64", 64, PPC_OPERAND_VR },
+  { "v.65", 65, PPC_OPERAND_VR },
+  { "v.66", 66, PPC_OPERAND_VR },
+  { "v.67", 67, PPC_OPERAND_VR },
+  { "v.68", 68, PPC_OPERAND_VR },
+  { "v.69", 69, PPC_OPERAND_VR },
   { "v.7", 7, PPC_OPERAND_VR },
+  { "v.70", 70, PPC_OPERAND_VR },
+  { "v.71", 71, PPC_OPERAND_VR },
+  { "v.72", 72, PPC_OPERAND_VR },
+  { "v.73", 73, PPC_OPERAND_VR },
+  { "v.74", 74, PPC_OPERAND_VR },
+  { "v.75", 75, PPC_OPERAND_VR },
+  { "v.76", 76, PPC_OPERAND_VR },
+  { "v.77", 77, PPC_OPERAND_VR },
+  { "v.78", 78, PPC_OPERAND_VR },
+  { "v.79", 79, PPC_OPERAND_VR },
   { "v.8", 8, PPC_OPERAND_VR },
+  { "v.80", 80, PPC_OPERAND_VR },
+  { "v.81", 81, PPC_OPERAND_VR },
+  { "v.82", 82, PPC_OPERAND_VR },
+  { "v.83", 83, PPC_OPERAND_VR },
+  { "v.84", 84, PPC_OPERAND_VR },
+  { "v.85", 85, PPC_OPERAND_VR },
+  { "v.86", 86, PPC_OPERAND_VR },
+  { "v.87", 87, PPC_OPERAND_VR },
+  { "v.88", 88, PPC_OPERAND_VR },
+  { "v.89", 89, PPC_OPERAND_VR },
   { "v.9", 9, PPC_OPERAND_VR },
+  { "v.90", 90, PPC_OPERAND_VR },
+  { "v.91", 91, PPC_OPERAND_VR },
+  { "v.92", 92, PPC_OPERAND_VR },
+  { "v.93", 93, PPC_OPERAND_VR },
+  { "v.94", 94, PPC_OPERAND_VR },
+  { "v.95", 95, PPC_OPERAND_VR },
+  { "v.96", 96, PPC_OPERAND_VR },
+  { "v.97", 97, PPC_OPERAND_VR },
+  { "v.98", 98, PPC_OPERAND_VR },
+  { "v.99", 99, PPC_OPERAND_VR },
 
   { "v0", 0, PPC_OPERAND_VR },
   { "v1", 1, PPC_OPERAND_VR },
   { "v10", 10, PPC_OPERAND_VR },
+  { "v100", 100, PPC_OPERAND_VR },
+  { "v101", 101, PPC_OPERAND_VR },
+  { "v102", 102, PPC_OPERAND_VR },
+  { "v103", 103, PPC_OPERAND_VR },
+  { "v104", 104, PPC_OPERAND_VR },
+  { "v105", 105, PPC_OPERAND_VR },
+  { "v106", 106, PPC_OPERAND_VR },
+  { "v107", 107, PPC_OPERAND_VR },
+  { "v108", 108, PPC_OPERAND_VR },
+  { "v109", 109, PPC_OPERAND_VR },
   { "v11", 11, PPC_OPERAND_VR },
+  { "v110", 110, PPC_OPERAND_VR },
+  { "v111", 111, PPC_OPERAND_VR },
+  { "v112", 112, PPC_OPERAND_VR },
+  { "v113", 113, PPC_OPERAND_VR },
+  { "v114", 114, PPC_OPERAND_VR },
+  { "v115", 115, PPC_OPERAND_VR },
+  { "v116", 116, PPC_OPERAND_VR },
+  { "v117", 117, PPC_OPERAND_VR },
+  { "v118", 118, PPC_OPERAND_VR },
+  { "v119", 119, PPC_OPERAND_VR },
   { "v12", 12, PPC_OPERAND_VR },
+  { "v120", 120, PPC_OPERAND_VR },
+  { "v121", 121, PPC_OPERAND_VR },
+  { "v122", 122, PPC_OPERAND_VR },
+  { "v123", 123, PPC_OPERAND_VR },
+  { "v124", 124, PPC_OPERAND_VR },
+  { "v125", 125, PPC_OPERAND_VR },
+  { "v126", 126, PPC_OPERAND_VR },
+  { "v127", 127, PPC_OPERAND_VR },
   { "v13", 13, PPC_OPERAND_VR },
   { "v14", 14, PPC_OPERAND_VR },
   { "v15", 15, PPC_OPERAND_VR },
@@ -642,12 +769,80 @@ static const struct pd_reg pre_defined_registers[] =
   { "v3", 3, PPC_OPERAND_VR },
   { "v30", 30, PPC_OPERAND_VR },
   { "v31", 31, PPC_OPERAND_VR },
+  { "v32", 32, PPC_OPERAND_VR },
+  { "v33", 33, PPC_OPERAND_VR },
+  { "v34", 34, PPC_OPERAND_VR },
+  { "v35", 35, PPC_OPERAND_VR },
+  { "v36", 36, PPC_OPERAND_VR },
+  { "v37", 37, PPC_OPERAND_VR },
+  { "v38", 38, PPC_OPERAND_VR },
+  { "v39", 39, PPC_OPERAND_VR },
   { "v4", 4, PPC_OPERAND_VR },
+  { "v40", 40, PPC_OPERAND_VR },
+  { "v41", 41, PPC_OPERAND_VR },
+  { "v42", 42, PPC_OPERAND_VR },
+  { "v43", 43, PPC_OPERAND_VR },
+  { "v44", 44, PPC_OPERAND_VR },
+  { "v45", 45, PPC_OPERAND_VR },
+  { "v46", 46, PPC_OPERAND_VR },
+  { "v47", 47, PPC_OPERAND_VR },
+  { "v48", 48, PPC_OPERAND_VR },
+  { "v49", 49, PPC_OPERAND_VR },
   { "v5", 5, PPC_OPERAND_VR },
+  { "v50", 50, PPC_OPERAND_VR },
+  { "v51", 51, PPC_OPERAND_VR },
+  { "v52", 52, PPC_OPERAND_VR },
+  { "v53", 53, PPC_OPERAND_VR },
+  { "v54", 54, PPC_OPERAND_VR },
+  { "v55", 55, PPC_OPERAND_VR },
+  { "v56", 56, PPC_OPERAND_VR },
+  { "v57", 57, PPC_OPERAND_VR },
+  { "v58", 58, PPC_OPERAND_VR },
+  { "v59", 59, PPC_OPERAND_VR },
   { "v6", 6, PPC_OPERAND_VR },
+  { "v60", 60, PPC_OPERAND_VR },
+  { "v61", 61, PPC_OPERAND_VR },
+  { "v62", 62, PPC_OPERAND_VR },
+  { "v63", 63, PPC_OPERAND_VR },
+  { "v64", 64, PPC_OPERAND_VR },
+  { "v65", 65, PPC_OPERAND_VR },
+  { "v66", 66, PPC_OPERAND_VR },
+  { "v67", 67, PPC_OPERAND_VR },
+  { "v68", 68, PPC_OPERAND_VR },
+  { "v69", 69, PPC_OPERAND_VR },
   { "v7", 7, PPC_OPERAND_VR },
+  { "v70", 70, PPC_OPERAND_VR },
+  { "v71", 71, PPC_OPERAND_VR },
+  { "v72", 72, PPC_OPERAND_VR },
+  { "v73", 73, PPC_OPERAND_VR },
+  { "v74", 74, PPC_OPERAND_VR },
+  { "v75", 75, PPC_OPERAND_VR },
+  { "v76", 76, PPC_OPERAND_VR },
+  { "v77", 77, PPC_OPERAND_VR },
+  { "v78", 78, PPC_OPERAND_VR },
+  { "v79", 79, PPC_OPERAND_VR },
   { "v8", 8, PPC_OPERAND_VR },
+  { "v80", 80, PPC_OPERAND_VR },
+  { "v81", 81, PPC_OPERAND_VR },
+  { "v82", 82, PPC_OPERAND_VR },
+  { "v83", 83, PPC_OPERAND_VR },
+  { "v84", 84, PPC_OPERAND_VR },
+  { "v85", 85, PPC_OPERAND_VR },
+  { "v86", 86, PPC_OPERAND_VR },
+  { "v87", 87, PPC_OPERAND_VR },
+  { "v88", 88, PPC_OPERAND_VR },
+  { "v89", 89, PPC_OPERAND_VR },
   { "v9", 9, PPC_OPERAND_VR },
+  { "v90", 90, PPC_OPERAND_VR },
+  { "v91", 91, PPC_OPERAND_VR },
+  { "v92", 92, PPC_OPERAND_VR },
+  { "v93", 93, PPC_OPERAND_VR },
+  { "v94", 94, PPC_OPERAND_VR },
+  { "v95", 95, PPC_OPERAND_VR },
+  { "v96", 96, PPC_OPERAND_VR },
+  { "v97", 97, PPC_OPERAND_VR },
+  { "v98", 98, PPC_OPERAND_VR },
+  { "v99", 99, PPC_OPERAND_VR },
 
   /* Vector Scalar (VSX) registers (ISA 2.06).  */
   { "vs.0", 0, PPC_OPERAND_VSR },
@@ -811,6 +1006,21 @@ reg_name_search (const struct pd_reg *regs, int regcount, const char *name)
   return NULL;
 }
 
+/* REG, unless it is one of the Xenon VMX128 registers v32-v127 and the
+   current dialect does not have them (so other dialects are unaffected by
+   their presence in pre_defined_registers).  */
+
+static const struct pd_reg *
+ppc_reg_visible (const struct pd_reg *reg)
+{
+  if (reg != NULL
+      && (reg->flags & PPC_OPERAND_VR) != 0
+      && reg->value > 31
+      && (ppc_cpu & PPC_OPCODE_VMX_128) == 0)
+    return NULL;
+  return reg;
+}
+
 /* Called for a non-symbol, non-number operand.  Handles %reg.  */
 
 void
@@ -833,8 +1043,9 @@ md_operand (expressionS *expressionP)
   start = input_line_pointer;
 
   c = get_symbol_name (&name);
-  reg = reg_name_search (pre_defined_registers,
-			 ARRAY_SIZE (pre_defined_registers), name);
+  reg = ppc_reg_visible (reg_name_search (pre_defined_registers,
+					  ARRAY_SIZE (pre_defined_registers),
+					  name));
   *input_line_pointer = c;
 
   if (reg != NULL)
@@ -876,8 +1087,9 @@ ppc_parse_name (const char *name, expressionS *exp, enum expr_mode mode)
   if (cr_operand)
     reg = reg_name_search (cr_cond, ARRAY_SIZE (cr_cond), name);
   if (reg == NULL && (cr_operand || reg_names_p))
-    reg = reg_name_search (pre_defined_registers,
-			   ARRAY_SIZE (pre_defined_registers), name);
+    reg = ppc_reg_visible (reg_name_search (pre_defined_registers,
+					    ARRAY_SIZE (pre_defined_registers),
+					    name));
   if (reg != NULL)
     {
       exp->X_op = O_register;
@@ -1098,6 +1310,26 @@ const struct option md_longopts[] = {
 };
 const size_t md_longopts_size = sizeof (md_longopts);
 
+/* Xenon (plan D6): the sticky -mspe, -mspe2, -mlsp and -mvle options (and
+   the same .machine names) cannot be combined with the Xenon dialect.  SPE
+   shares major opcode 4 with AltiVec, so its mnemonics would assemble to
+   allowed AltiVec words with a different meaning.  Report it and drop the
+   bits, also from the sticky set so that a later -mxenon or .machine xenon
+   does not bring them back.  WHAT and ARG name the option or directive.  */
+
+static void
+ppc_xenon_check_dialect (const char *what, const char *arg)
+{
+  if ((ppc_cpu & PPC_OPCODE_XENON) != 0
+      && (ppc_cpu & PPC_XENON_FOREIGN) != 0)
+    {
+      as_bad (_("%s%s: the Xenon dialect has no SPE, SPE2, LSP or VLE "
+		"instructions"), what, arg);
+      ppc_cpu &= ~(ppc_cpu_t) PPC_XENON_FOREIGN;
+      sticky &= ~(ppc_cpu_t) PPC_XENON_FOREIGN;
+    }
+}
+
 int
 md_parse_option (int c, const char *arg)
 {
@@ -1174,7 +1406,8 @@ md_parse_option (int c, const char *arg)
       if (new_cpu != 0 && (new_cpu & PPC_OPCODE_RAW) == 0)
 	{
 	  ppc_cpu = new_cpu;
-	  if (strcmp (arg, "vle") == 0)
+	  ppc_xenon_check_dialect ("-m", arg);
+	  if (strcmp (arg, "vle") == 0 && (ppc_cpu & PPC_OPCODE_XENON) == 0)
 	    {
 	      if (set_target_endian && target_big_endian == 0)
 		as_bad (_("the use of -mvle requires big endian."));
@@ -1237,6 +1470,7 @@ md_parse_option (int c, const char *arg)
       else if (strcmp (arg, "spe2") == 0)
 	{
 	  ppc_cpu |= PPC_OPCODE_SPE2;
+	  ppc_xenon_check_dialect ("-m", arg);
 	}
 #endif
       else
@@ -1375,6 +1609,9 @@ PowerPC options:\n"));
 -mfuture                generate code for 'future' architecture\n"));
   fprintf (stream, _("\
 -mcell                  generate code for Cell Broadband Engine architecture\n"));
+  fprintf (stream, _("\
+-mxenon, -mvmx128       generate code for the Xenon (Xbox 360) CPU: VMX128\n\
+                        and only the instructions the console implements\n"));
   fprintf (stream, _("\
 -mcom                   generate code for Power/PowerPC common instructions\n"));
   fprintf (stream, _("\
@@ -1617,6 +1854,16 @@ ppc_setup_opcodes (void)
   const struct powerpc_opcode *op;
   const struct powerpc_opcode *op_end;
   bool bad_insn = false;
+  /* Under the Xenon dialect only powerpc_opcodes rows that can encode an
+     allow-listed word are entered (ppc_xenon_opcode_ok), and -many does not
+     widen the set.  Elsewhere the Xenon-only rows are never entered unless
+     the dialect has their flag, so other dialects are unaffected.  */
+  bool xenon = (ppc_cpu & PPC_OPCODE_XENON) != 0;
+  ppc_cpu_t any = xenon ? 0 : ppc_cpu & PPC_OPCODE_ANY;
+  const ppc_cpu_t xenon_only = PPC_OPCODE_XENON | PPC_OPCODE_VMX_128;
+  /* The bits that select rows: under Xenon only the Xenon CPU's own, so
+     that sticky extensions (-maltivec, -mvsx, ...) add no rows.  */
+  ppc_cpu_t sel = xenon ? ppc_cpu & PPC_XENON_CPU : ppc_cpu;
 
   if (ppc_hash != NULL)
     {
@@ -1710,18 +1957,23 @@ ppc_setup_opcodes (void)
 	  bad_insn |= insn_validate (op);
 	}
 
-      if ((ppc_cpu & op->flags) != 0
-	  && !(ppc_cpu & op->deprecated)
-	  && str_hash_insert (ppc_hash, op->name, op, 0) != NULL)
+      if ((sel & op->flags) != 0
+	  && !(sel & op->deprecated)
+	  && (!xenon || ppc_xenon_opcode_ok (op))
+	  && str_hash_insert (ppc_hash, op->name, op, 0) != NULL
+	  /* A Xenon-only row whose name is already entered is an alternate
+	     encoding for the disassembler (mftb X(31,371)); keep the first.  */
+	  && !(xenon && op->flags == PPC_OPCODE_XENON))
 	{
 	  as_bad (_("duplicate %s"), op->name);
 	  bad_insn = true;
 	}
     }
 
-  if ((ppc_cpu & PPC_OPCODE_ANY) != 0)
+  if (any != 0)
     for (op = powerpc_opcodes; op < op_end; op++)
-      str_hash_insert (ppc_hash, op->name, op, 0);
+      if ((op->flags & xenon_only & ~ppc_cpu) == 0)
+	str_hash_insert (ppc_hash, op->name, op, 0);
 
   op_end = prefix_opcodes + prefix_num_opcodes;
   for (op = prefix_opcodes; op < op_end; op++)
@@ -1752,6 +2004,7 @@ ppc_setup_opcodes (void)
 
       if ((ppc_cpu & op->flags) != 0
 	  && !(ppc_cpu & op->deprecated)
+	  && !xenon
 	  && str_hash_insert (ppc_hash, op->name, op, 0) != NULL)
 	{
 	  as_bad (_("duplicate %s"), op->name);
@@ -1759,11 +2012,11 @@ ppc_setup_opcodes (void)
 	}
     }
 
-  if ((ppc_cpu & PPC_OPCODE_ANY) != 0)
+  if (any != 0)
     for (op = prefix_opcodes; op < op_end; op++)
       str_hash_insert (ppc_hash, op->name, op, 0);
 
-  if ((ppc_cpu & (PPC_OPCODE_VLE | PPC_OPCODE_ANY)) != 0)
+  if (!xenon && ((ppc_cpu & PPC_OPCODE_VLE) != 0 || any != 0))
     {
       unsigned int prev_seg = 0;
       unsigned int seg;
@@ -1798,7 +2051,7 @@ ppc_setup_opcodes (void)
     }
 
   /* LSP instructions */
-  if ((ppc_cpu & (PPC_OPCODE_LSP | PPC_OPCODE_ANY)) != 0)
+  if (!xenon && ((ppc_cpu & PPC_OPCODE_LSP) != 0 || any != 0))
     {
       unsigned int prev_seg = 0;
       unsigned int seg;
@@ -1822,7 +2075,7 @@ ppc_setup_opcodes (void)
     }
 
   /* SPE2 instructions */
-  if ((ppc_cpu & (PPC_OPCODE_SPE2 | PPC_OPCODE_ANY)) != 0)
+  if (!xenon && ((ppc_cpu & PPC_OPCODE_SPE2) != 0 || any != 0))
     {
       unsigned int prev_seg = 0;
       unsigned int seg;
@@ -3279,6 +3532,83 @@ parse_tls_arg (char **str, const expressionS *exp, struct ppc_fixup *tls_fix)
 }
 #endif
 
+/* Xenon dialect: diagnose mnemonic NAME, which is not in the hash.  */
+
+static void
+xenon_bad_opcode (const char *name)
+{
+  static const struct
+  {
+    const struct powerpc_opcode *table;
+    const unsigned int *num;
+  } tables[] =
+    {
+      { powerpc_opcodes, &powerpc_num_opcodes },
+      { prefix_opcodes, &prefix_num_opcodes },
+      { vle_opcodes, &vle_num_opcodes },
+      { lsp_opcodes, &lsp_num_opcodes },
+      { spe2_opcodes, &spe2_num_opcodes },
+    };
+  const struct powerpc_opcode *op;
+  size_t i;
+
+  if (ppc_xenon_find_illegal (name, 0) != NULL)
+    {
+      as_bad (_("`%s' is not implemented on Xenon"), name);
+      return;
+    }
+  /* A mnemonic binutils knows from any of its tables.  */
+  for (i = 0; i < ARRAY_SIZE (tables); i++)
+    for (op = tables[i].table; op < tables[i].table + *tables[i].num; op++)
+      if (strcmp (op->name, name) == 0)
+	{
+	  as_bad (_("`%s' is not a Xenon instruction"), name);
+	  return;
+	}
+  as_bad (_("unrecognized opcode: `%s'"), name);
+}
+
+/* Xenon dialect: report that instruction word INSN (mnemonic NAME) is not
+   in the allow-list.  FILE and LINE as for as_bad_where (NULL: current
+   line).  */
+
+static void
+xenon_bad_word (const char *name, uint64_t insn, const char *file,
+		unsigned int line)
+{
+  if (ppc_xenon_find_illegal (NULL, insn) != NULL)
+    as_bad_where (file, line,
+		  _("`%s' (0x%08" PRIx64 ") is not implemented on Xenon"),
+		  name, insn);
+  else
+    as_bad_where (file, line,
+		  _("`%s' with these operands (0x%08" PRIx64 ") is not a Xenon "
+		    "instruction"), name, insn);
+}
+
+/* Xenon dialect: legacy AltiVec operands (5-bit VR fields) only reach
+   v0-v31; the VMX128 forms take v0-v127.  Give a specific diagnostic
+   instead of the generic range error.  Returns the value to insert.  */
+
+static int64_t
+xenon_check_legacy_vr (ppc_cpu_t cpu, const char *name,
+		       const struct powerpc_operand *operand,
+		       int64_t val, const char *file, unsigned int line)
+{
+  if ((cpu & PPC_OPCODE_VMX_128) != 0
+      && (operand->flags & PPC_OPERAND_VR) != 0
+      && operand->bitm == 0x1f
+      && operand->shift >= 0
+      && (val < 0 || val > 31))
+    {
+      as_bad_where (file, line,
+		    _("`%s' takes v0-v31 only, not v%" PRId64 ": legacy "
+		      "AltiVec instructions cannot name v32-v127"), name, val);
+      return 0;
+    }
+  return val;
+}
+
 /* This routine is called for each instruction to be assembled.  */
 
 void
@@ -3307,7 +3637,10 @@ md_assemble (char *str)
   opcode = str_hash_find (ppc_hash, str);
   if (opcode == NULL)
     {
-      as_bad (_("unrecognized opcode: `%s'"), str);
+      if ((ppc_cpu & PPC_OPCODE_XENON) != 0)
+	xenon_bad_opcode (str);
+      else
+	as_bad (_("unrecognized opcode: `%s'"), str);
       ppc_clear_labels ();
       return;
     }
@@ -3464,7 +3797,31 @@ md_assemble (char *str)
 	  break;
 	}
 
-      if (ex.X_op == O_register)
+      if (fc > 0
+	  && (ex.X_op == O_register || ex.X_op == O_constant)
+	  && ppc_xenon_tied_operand_p (operand))
+	{
+	  /* Xenon tied vS whose vD is not known yet (an earlier operand
+	     went to a fixup): its insert function compares it with the vD
+	     bits of the word, so insert it from a fixup as well.  Fixups
+	     are applied in order, after vD's.  */
+	  if (ex.X_op == O_register
+	      && (ex.X_md & ~operand->flags
+		  & (PPC_OPERAND_GPR | PPC_OPERAND_FPR | PPC_OPERAND_VR
+		     | PPC_OPERAND_VSR | PPC_OPERAND_CR_BIT
+		     | PPC_OPERAND_CR_REG | PPC_OPERAND_SPR | PPC_OPERAND_GQR
+		     | PPC_OPERAND_ACC | PPC_OPERAND_DMR)) != 0)
+	    as_warn (_("invalid register expression"));
+	  if (fc >= MAX_INSN_FIXUPS)
+	    as_fatal (_("too many fixups"));
+	  fixups[fc].exp = ex;
+	  fixups[fc].exp.X_op = O_constant;
+	  fixups[fc].exp.X_md = 0;
+	  fixups[fc].opindex = *opindex_ptr;
+	  fixups[fc].reloc = BFD_RELOC_NONE;
+	  ++fc;
+	}
+      else if (ex.X_op == O_register)
 	{
 	  if ((ex.X_md
 	       & ~operand->flags
@@ -3476,7 +3833,12 @@ md_assemble (char *str)
 		   && ex.X_add_number != 0
 		   && (operand->flags & PPC_OPERAND_GPR_0) != 0))
 	    as_warn (_("invalid register expression"));
-	  insn = ppc_insert_operand (insn, operand, ex.X_add_number,
+	  insn = ppc_insert_operand (insn, operand,
+				     xenon_check_legacy_vr (ppc_cpu,
+							    opcode->name,
+							    operand,
+							    ex.X_add_number,
+							    NULL, 0),
 				     ppc_cpu, NULL, 0);
 	}
       else if (ex.X_op == O_constant
@@ -3575,6 +3937,8 @@ md_assemble (char *str)
 		break;
 	      }
 #endif /* OBJ_ELF */
+	  val = xenon_check_legacy_vr (ppc_cpu, opcode->name, operand, val,
+				       NULL, 0);
 	  insn = ppc_insert_operand (insn, operand, val, ppc_cpu, NULL, 0);
 	}
       else
@@ -3986,6 +4350,14 @@ md_assemble (char *str)
 	as_bad (_("junk at end of line: `%s'"), str);
     }
 
+  /* Xenon dialect (plan D6): the assembled word itself must be in the
+     allow-list.  This catches operand values that turn an accepted row
+     into an unlisted encoding (e.g. lwarx with EH=1).  Operands that are
+     not known yet are zero here; md_apply_fix checks the word again after
+     inserting each of them (e.g. lwarx 3,4,5,eh with a later .set eh,1).  */
+  if ((ppc_cpu & PPC_OPCODE_XENON) != 0 && !ppc_xenon_insn_ok (insn))
+    xenon_bad_word (opcode->name, insn, NULL, 0);
+
 #ifdef OBJ_ELF
   /* Do we need/want an APUinfo section? */
   if ((ppc_cpu & (PPC_OPCODE_E500 | PPC_OPCODE_E500MC | PPC_OPCODE_VLE)) != 0
@@ -4131,6 +4503,7 @@ md_assemble (char *str)
 			      BFD_RELOC_NONE);
 	}
       fixP->fx_pcrel_adjust = fixups[i].opindex;
+      fixP->tc_fix_data.insn_name = opcode->name;
     }
 }
 
@@ -5948,7 +6321,10 @@ ppc_machine (int ignore ATTRIBUTE_UNUSED)
 				   sec == NULL ? &sticky : &machine_sticky,
 				   cpu_string);
 	  if (new_cpu != 0)
-	    ppc_cpu = new_cpu;
+	    {
+	      ppc_cpu = new_cpu;
+	      ppc_xenon_check_dialect (".machine ", cpu_string);
+	    }
 	  else
 	    as_bad (_("invalid machine `%s'"), cpu_string);
 	}
@@ -7437,9 +7813,22 @@ md_apply_fix (fixS *fixP, valueT *valP, segT seg)
 		    insn = insn << 32 | bfd_getl32 (where + 4);
 		}
 	    }
+	  if (fixP->tc_fix_data.insn_name != NULL)
+	    fieldval = xenon_check_legacy_vr (fixP->tc_fix_data.ppc_cpu,
+					      fixP->tc_fix_data.insn_name,
+					      operand, fieldval,
+					      fixP->fx_file, fixP->fx_line);
 	  insn = ppc_insert_operand (insn, operand, fieldval,
 				     fixP->tc_fix_data.ppc_cpu,
 				     fixP->fx_file, fixP->fx_line);
+	  /* Xenon (plan D6): the word with this operand filled in must
+	     still be in the allow-list; md_assemble only saw it zero.  */
+	  if ((fixP->tc_fix_data.ppc_cpu & PPC_OPCODE_XENON) != 0
+	      && fixP->tc_fix_data.insn_name != NULL
+	      && fixP->fx_size == 4
+	      && !ppc_xenon_insn_ok (insn))
+	    xenon_bad_word (fixP->tc_fix_data.insn_name, insn,
+			    fixP->fx_file, fixP->fx_line);
 	  if (target_big_endian)
 	    {
 	      if (fixP->fx_size < 4)
@@ -7820,7 +8209,16 @@ tc_ppc_regname_to_dw2regnum (char *regname)
     {
       p = regname + 1 + (regname[1] == '.');
       regnum = strtoul (p, &q, 10);
-      if (p == q || *q || regnum >= 32)
+      if (p == q || *q)
+	return -1;
+      /* The Xbox 360 Xenon VMX128 registers v32-v127 (-mxenon, -mvmx128)
+	 continue GCC's .eh_frame numbering after the 8 DMRs (112-119):
+	 v32-v127 are 120-215, as rs6000_debugger_regno emits them.  */
+      if (regname[0] == 'v'
+	  && (ppc_cpu & PPC_OPCODE_VMX_128) != 0
+	  && regnum >= 32 && regnum < 128)
+	return regnum - 32 + 120;
+      if (regnum >= 32)
 	return -1;
       if (regname[0] == 'f')
 	regnum += 32;

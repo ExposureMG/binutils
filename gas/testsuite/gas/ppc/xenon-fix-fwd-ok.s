@@ -1,0 +1,19 @@
+# Forward-referenced operands that satisfy the Xenon checks assemble.
+	vmaddfp128 vd,1,2,vd
+	vmaddfp128 vd,1,2,5
+	vmaddcfp128 vd,1,5,2
+	vnmsubfp128 vd,1,2,5
+	vsel128 vd,1,2,5
+	vmaddfp128 7,1,2,vs
+	vmaddfp128 vs,1,2,vs
+	vmaddfp128 vh,1,2,100
+	lwarx 3,4,5,eh0
+	ldarx 3,4,5,eh0
+	dcbt 3,4,th
+	vaddubm vd,1,vd31
+	.set vd,5
+	.set vs,7
+	.set vh,100
+	.set eh0,0
+	.set th,16
+	.set vd31,31
