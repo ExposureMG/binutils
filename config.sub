@@ -940,6 +940,11 @@ case $basic_machine in
 		cpu=i386
 		vendor=ibm
 		;;
+	xenon)
+		cpu=powerpc64
+		vendor=unknown
+		basic_os=linux
+		;;
 	rm[46]00)
 		cpu=mips
 		vendor=siemens
